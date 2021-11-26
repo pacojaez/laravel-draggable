@@ -5,10 +5,32 @@
 ## SortableJS
 
 Esta aplicación es un ejemplo de uso en laravel del componente sortablejs
+https://sortablejs.github.io/Sortable/
 
-## Procesos seguidos para la construcción base y de requisitos
+## Proceso para instalación y prueba
+
+Una vez descargada editar el fichero .env y poner nombre de base de datos y clave
+
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=XXXXXXX
+    DB_USERNAME=XXXXXXX
+    DB_PASSWORD=XXXXXXX
+
+Ejecutamos composer install
+
+    npm run dev
+    composer dumpautoload
+
+Lanzar migraciones con
+
+    php artisan migrate --seed
+
+## Procesos seguidos para la creación de este ejemplo y de requisitos
 
 ### Instalamos laravel
+
 editamos el .env
 
 ### Creamos el sistema de Auth
