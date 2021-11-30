@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Record;
+use App\Models\Shift;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -18,9 +19,9 @@ class TemplatesBoard extends Component
         $this->afterMount($extras);
     }
 
-    public function hydrate(){
-        $records = $this->records();
-    }
+//    public function hydrate(){
+//        $records = $this->records();
+//    }
 
     public function afterMount($extras = [])
     {
@@ -70,6 +71,12 @@ class TemplatesBoard extends Component
         return Record::all();
     }
 
+    public function shifts() : Collection
+    {
+        return Shift::all();
+    }
+
+
     public function isRecordInStatus($record, $status)
     {
         return $record['status'] == $status['id'];
@@ -100,6 +107,8 @@ class TemplatesBoard extends Component
 
         $records = $this->records();
 
+        $shifts = $this->shifts();
+
         $statuses = $statuses
             ->map(function ($status) use ($records) {
                 $status['group'] = $this->id;
@@ -116,6 +125,7 @@ class TemplatesBoard extends Component
             ->with([
                 'records' => $records,
                 'statuses' => $statuses,
+                'shifts' => $shifts
             ]);
     }
 }
