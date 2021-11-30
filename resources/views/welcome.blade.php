@@ -56,7 +56,7 @@
 
                                     Ejecuta php artisan migrate --seed<br>
 
-                                    Luego te registrar y te saldrá el listado con ejemplos
+                                    Luego te registras y te saldrá el listado con ejemplos
 
 
                                 </div>
