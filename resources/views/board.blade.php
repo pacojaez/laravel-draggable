@@ -118,7 +118,7 @@
                         evt.preventDefault();
                         evt.item.classList.remove('cursor-pointer');
                         let parentId = evt.item.parentElement.id;
-                        @this.call('onStatusChanged2', evt.to.id, evt.item.id );
+                        @this.call('onStatusChanged', evt.to.id, evt.item.id );
                     },
                 });
                 @endforeach

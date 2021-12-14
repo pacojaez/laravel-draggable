@@ -196,43 +196,6 @@ class TemplatesBoard extends Component
     }
 
     /**
-     * Undocumented function
-     *
-     * @param [type] $record
-     * @param [type] $status
-     * @return boolean
-     */
-    // public function isRecordInStatus($record, $status)
-    // {
-    //     return $record['status'] == $status['id'];
-    // }
-
-    /**
-     * Undocumented function
-     *
-     * @param [type] $turno
-     * @param [type] $status
-     * @return boolean
-     */
-    public function isTurnoInStatus($turno, $status)
-    {
-        return $turno['status'] == $status['id'];
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param [type] $recordId
-     * @param [type] $statusId
-     * @param [type] $orderedIds
-     * @return void
-     */
-    public function onStatusSorted($recordId, $statusId, $orderedIds)
-    {
-        //
-    }
-
-    /**
      * Función que se invoca cuando hay un cambio en la vista
      * La vista manda el id del turno y el empleado
      * La función chequea en la DB si existe ese registro
@@ -244,7 +207,7 @@ class TemplatesBoard extends Component
      * @param string $empleado
      * @return void
      */
-    public function onStatusChanged2( string $toId, string $empleado )
+    public function onStatusChanged ( string $toId, string $empleado )
     {
         $record = new Record();
         $record->status = $toId;
@@ -289,35 +252,6 @@ class TemplatesBoard extends Component
         return redirect(request()->header('Referer'));
     }
 
-    // public function recordRemoved( string $empleado, string $turno ){
-
-    //     $record = Record::where('title', 'like', $empleado)
-    //                         ->where('status', 'like', $turno)
-    //                         ->first();
-    //     $record->delete();
-    //     $this->getRecords();
-    //     $this->render();
-    // }
-
-
-    public function onStatusChanged( $recordId, $statusId, $fromOrderedIds, $toOrderedIds)
-    {
-
-
-        dd( $recordId);
-        // $record = Record::find($recordId);
-        // $record->status = $statusId;
-        // $record->status = $statusId;
-
-        // meter en la DB el shift también
-
-    }
-
-    public function onRecordClick($recordId)
-    {
-        //
-    }
-
     /**
      * Generamos la vista pasandole: empleados, statuses y turnos y registros de la DB
      *
@@ -332,17 +266,6 @@ class TemplatesBoard extends Component
         $turnos = $this->turnos();
         $records = $this->getRecords();
 
-        // $statuses = $statuses
-        //     ->map(function ($status) use ($records) {
-        //         $status['group'] = $this->id;
-        //         $status['statusRecordsId'] = "{$this->id}-{$status['id']}";
-        //         $status['records'] = $records
-        //             ->filter(function ($record) use ($status) {
-        //                 return $this->isRecordInStatus($record, $status);
-        //             });
-
-        //         return $status;
-        //     });
         $statuses = $statuses
             ->map(function ($status) use ($turnos) {
                 $status['group'] = $this->id;
