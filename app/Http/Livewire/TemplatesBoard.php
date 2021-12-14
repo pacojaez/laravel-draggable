@@ -3,38 +3,55 @@
 namespace App\Http\Livewire;
 
 use App\Models\Record;
-use App\Models\Shift;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class TemplatesBoard extends Component
 {
+    /*
+    *propiedad relacionada con los registros de la DB
+    */
+    public $records;
 
-    public $recordClickEnabled;
+    /**
+     * Listener para remover un registro de la DB
+     */
+    protected $listeners = ['recordRemoved' => 'recordRemoved'];
 
+    /**
+     * Undocumented function
+     *
+     * @param boolean $recordClickEnabled
+     * @param array $extras
+     * @return void
+     */
     public function mount($recordClickEnabled = false,$extras = [])
     {
+        $statuses = [1,2,3];
+
         $this->recordClickEnabled = $recordClickEnabled ?? false;
 
         $this->afterMount($extras);
+
+        $this->records = Record::all();
     }
 
-//    public function hydrate(){
-//        $records = $this->records();
-//    }
+    // public function hydrate(){
+    //     $records = $this->records();
+    // }
 
     public function afterMount($extras = [])
     {
         //
     }
-
+    /**
+     * Collection de status para pruebas, podría sacarse de una tabla de la DB
+     *
+     * @return Collection
+     */
     public function statuses() : Collection
     {
         return collect([
-            [
-                'id' => '0',
-                'title' => 'Empleados libres',
-            ],
             [
                 'id' => '1',
                 'title' => 'Lunes',
@@ -66,32 +83,233 @@ class TemplatesBoard extends Component
         ]);
     }
 
-    public function records() : Collection
+    /**
+     * Collection de turnos para pruebas, podría sacarse de una tabla de la DB
+     *
+     * @return Collection
+     */
+    public function turnos() : Collection
     {
-        return Record::all();
+        return collect([
+            [
+                'id' => '1',
+                'title' => 'Mañana',
+            ],
+            [
+                'id' => '2',
+                'title' => 'Tarde',
+            ],
+            [
+                'id' => '3',
+                'title' => 'Noche',
+            ],
+            [
+                'id' => '4',
+                'title' => 'Noche_Partido',
+            ]
+        ]);
     }
 
-    public function shifts() : Collection
+    /**
+     * Collection de empleados para pruebas, podría sacarse de una tabla de la DB
+     *
+     * @return Collection
+     */
+    public function empleados() : Collection
     {
-        return Shift::all();
+        //traemos los empleados de la base de datos
+        //en esta versión simplemente tenemos un array de 15 empleados
+        //para generar el primer draggable de la funcionalidad
+
+        return collect([
+            [
+                'id' => '1',
+                'empleado' => 'Dr. Quinten Schinner',
+            ],
+            [
+                'id' => '2',
+                'empleado' => 'Eriberto Roob',
+            ],
+            [
+                'id' => '3',
+                'empleado' => 'Dr. Victoria West MD',
+            ],
+            [
+                'id' => '4',
+                'empleado' => 'Rosa Macejkovic',
+            ],
+            [
+                'id' => '5',
+                'empleado' => 'Prof. Andrew Blanda',
+            ],
+            [
+                'id' => '6',
+                'empleado' => 'Jaylin Romaguera',
+            ],
+            [
+                'id' => '7',
+                'empleado' => 'Prof. Narciso Veum',
+            ],
+            [
+                'id' => '8',
+                'empleado' => 'Micaela Monahan',
+            ],
+            [
+                'id' => '9',
+                'empleado' => 'Dr. Arnold Hirthe',
+            ],
+            [
+                'id' => '10',
+                'empleado' => 'Ms. Antoinette Paucek',
+            ],
+            [
+                'id' => '11',
+                'empleado' => 'Morgan Schultz',
+            ],
+            [
+                'id' => '12',
+                'empleado' => 'Rosalyn Block Jr.',
+            ],
+            [
+                'id' => '13',
+                'empleado' => 'Ms. Antoinette Paucek',
+            ],
+            [
+                'id' => '14',
+                'empleado' => 'Phyllis Lockman',
+            ],
+            [
+                'id' => '35',
+                'empleado' => 'Magnus Predovic',
+            ],
+        ]);
     }
 
-
-    public function isRecordInStatus($record, $status)
+    /**
+     * Get all the records from de DB
+     *
+     * @return Collection
+     */
+    public function getRecords() : Collection
     {
-        return $record['status'] == $status['id'];
+        return $this->records = Record::all();
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $record
+     * @param [type] $status
+     * @return boolean
+     */
+    // public function isRecordInStatus($record, $status)
+    // {
+    //     return $record['status'] == $status['id'];
+    // }
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $turno
+     * @param [type] $status
+     * @return boolean
+     */
+    public function isTurnoInStatus($turno, $status)
+    {
+        return $turno['status'] == $status['id'];
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $recordId
+     * @param [type] $statusId
+     * @param [type] $orderedIds
+     * @return void
+     */
     public function onStatusSorted($recordId, $statusId, $orderedIds)
     {
         //
     }
 
-    public function onStatusChanged($recordId, $statusId, $fromOrderedIds, $toOrderedIds)
+    /**
+     * Función que se invoca cuando hay un cambio en la vista
+     * La vista manda el id del turno y el empleado
+     * La función chequea en la DB si existe ese registro
+     * si no existe lo crea
+     * e invoca la función para recuperar los registros de la DB.
+     * Redirecciona a la misma página para evitar repeticiones de empleados en los turnos
+     *
+     * @param string $toId
+     * @param string $empleado
+     * @return void
+     */
+    public function onStatusChanged2( string $toId, string $empleado )
     {
-        $record = Record::find($recordId);
-        $record->status = $statusId;
-        $record->save();
+        $record = new Record();
+        $record->status = $toId;
+        $record->title = $empleado;
+        $recordAnt = Record::where('status', 'like', $toId)
+                            ->where('title', 'like', $empleado)
+                            ->first();
+        if( !$recordAnt ){
+            $record->save();
+            session()->flash('message', 'Trabajador: '.strtoupper($empleado).' añadido a turno: '.strtoupper(str_replace ( "_", ' ', $record->status)));
+        }
+        $this->getRecords();
+
+        return redirect(request()->header('Referer'));
+    }
+
+    /**
+     * Función para remover registros de la DB
+     * La vista llama a la función pasandole el turno y el empleado a remove
+     * Comprueba que existan
+     * y si existe lo remueve
+     * Redirecciona a la misma página para evitar repeticiones de empleados en los turnos
+     *
+     * @param string $turno
+     * @param string $empleado
+     * @return void
+     */
+    public function removeFromDB( string $turno, string $empleado ){
+
+        $record = Record::where('status', 'like', $turno)
+                            ->where('title', 'like', $empleado)
+                            ->first();
+        if($record){
+            $record->delete();
+            session()->flash('message', 'Trabajador: '.strtoupper($empleado).' eliminado del turno: '.strtoupper(str_replace ( "_", ' ', $record->status)));
+        }
+
+
+        $this->getRecords();
+        $this->mount();
+
+        return redirect(request()->header('Referer'));
+    }
+
+    // public function recordRemoved( string $empleado, string $turno ){
+
+    //     $record = Record::where('title', 'like', $empleado)
+    //                         ->where('status', 'like', $turno)
+    //                         ->first();
+    //     $record->delete();
+    //     $this->getRecords();
+    //     $this->render();
+    // }
+
+
+    public function onStatusChanged( $recordId, $statusId, $fromOrderedIds, $toOrderedIds)
+    {
+
+
+        dd( $recordId);
+        // $record = Record::find($recordId);
+        // $record->status = $statusId;
+        // $record->status = $statusId;
+
+        // meter en la DB el shift también
 
     }
 
@@ -100,32 +318,49 @@ class TemplatesBoard extends Component
         //
     }
 
-
+    /**
+     * Generamos la vista pasandole: empleados, statuses y turnos y registros de la DB
+     *
+     * @return void
+     */
     public function render()
     {
+
+        //pasamos a la vista los siguientes parametros:
+        $empleados = $this->empleados();
         $statuses = $this->statuses();
+        $turnos = $this->turnos();
+        $records = $this->getRecords();
 
-        $records = $this->records();
+        // $statuses = $statuses
+        //     ->map(function ($status) use ($records) {
+        //         $status['group'] = $this->id;
+        //         $status['statusRecordsId'] = "{$this->id}-{$status['id']}";
+        //         $status['records'] = $records
+        //             ->filter(function ($record) use ($status) {
+        //                 return $this->isRecordInStatus($record, $status);
+        //             });
 
-        $shifts = $this->shifts();
-
+        //         return $status;
+        //     });
         $statuses = $statuses
-            ->map(function ($status) use ($records) {
+            ->map(function ($status) use ($turnos) {
                 $status['group'] = $this->id;
-                $status['statusRecordsId'] = "{$this->id}-{$status['id']}";
-                $status['records'] = $records
-                    ->filter(function ($record) use ($status) {
-                        return $this->isRecordInStatus($record, $status);
-                    });
+                $status['statusTurnoId'] = "{$this->id}-{$status['id']}";
+                // $status['turnos'] = $turnos
+                //     ->filter(function ($turno) use ($status) {
+                //         return $this->isTurnoInStatus($turno, $status);
+                //     });
 
                 return $status;
             });
 
-        return view('board')
-            ->with([
+            return view('board', [
                 'records' => $records,
                 'statuses' => $statuses,
-                'shifts' => $shifts
+                'empleados' => $empleados,
+                'turnos' => $turnos
             ]);
+
     }
 }
